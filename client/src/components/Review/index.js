@@ -1,23 +1,22 @@
 import React from "react";
-import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
+import Link from '@mui/material/Link';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import {Grid, Item, Button} from '@mui/material';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Review from "./Review";
 
-
-const Landing = () => {
+const App = () => {
     const navigate = useNavigate();
-    
     return (
         <div>
-            <Box sx={{ flexGrow: 1 }}>
+           <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static" sx={{ backgroundColor: "#F2F2F2"}}>
-                    <Toolbar>
-
+                        <Toolbar>
                             <Link
                                 color="#0651AC"
                                 style={{ cursor: "pointer" }}
@@ -61,61 +60,13 @@ const Landing = () => {
                                         Search
                                     </Typography>
                             </Link>
-
-                    </Toolbar> 
+                        </Toolbar> 
                 </AppBar>
             </Box>
-
-            <Box>
-                <Grid container 
-                    alignItems="center"
-                    justifyContent="center" 
-                    style={{fontSize: 60, color: '#FFFFFF'}}
-                    bgcolor="#0A346B">
-
-                    <Grid item>    
-                    <h3>Welcome to Movie Reviews</h3>
-                    </Grid>
-                        
-                </Grid>
-           </Box>
-
-            <Box>
-                <Grid container 
-                    alignItems="center"
-                    justifyContent="center" 
-                    style={{fontSize: 60, color: '#FFFFFF'}}
-                    bgcolor='#FFFFFF'>
-
-                    <Grid item> 
-                        <h3>Filler</h3>   
-                    </Grid>
-                        
-                </Grid>
-           </Box>
-
-           <Box>
-                <Grid container 
-                    alignItems="center"
-                    justifyContent="center" 
-                    style={{fontSize: 60, color: '#FFFFFF'}}
-                    bgcolor='#FFFFFF'>
-
-                    <Grid item>   
-                        <h3>Filler</h3>    
-                    </Grid>
-                        
-                </Grid>
-           </Box>
-
-           
-
-
+            <Review/>
         </div>
     )
 }
-
-
-export default Landing;
+export default App;
 
 
