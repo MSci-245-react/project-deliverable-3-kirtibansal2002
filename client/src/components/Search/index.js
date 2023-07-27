@@ -143,7 +143,10 @@ const Search = () => {
                 component="form"
                 sx={{
                 '& > :not(style)': {width: '60%'},
-                m: '2rem'
+                m: '2rem',
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center'
                 }}
                 noValidate
                 autoComplete="off"
@@ -160,7 +163,10 @@ const Search = () => {
                 component="form"
                 sx={{
                 '& > :not(style)': {width: '60%'},
-                m: '2rem'
+                m: '2rem',
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center'
                 }}
                 noValidate
                 autoComplete="off"
@@ -178,6 +184,7 @@ const Search = () => {
                 sx={{
                 '& > :not(style)': {width: '60%'},
                 m: '2rem',
+                display: 'flex', 
                 justifyContent: 'center', 
                 alignItems: 'center'
                 }}
@@ -192,7 +199,7 @@ const Search = () => {
                 />
             </Box>
 
-            <Box sx={{ m: '2rem'}}>
+            <Box sx={{ m: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
                 <Button variant="contained" style={{ backgroundColor: '#0A346B'}}
                         onClick={() => {
                             handleSubmitButton();
