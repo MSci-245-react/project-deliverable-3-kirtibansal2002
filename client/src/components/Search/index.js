@@ -12,12 +12,24 @@ import IconButton from '@mui/material/IconButton';
 import {Grid, Item} from '@mui/material';
 import {TextField} from '@mui/material';
 
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
 const Search = () => {
+    const serverURL = "";
+
     const navigate = useNavigate();
 
     const [movieTitle, setMovieTitle] = useState('');
     const [actorName, setActorName] = useState('');
     const [directorName, setDirectorName] = useState('');
+    const [results , setResults] = useState([]);
+    const [showTable, setShowTable] = useState(false);
 
     const onChangeMovieTitle = (event) => {
         setMovieTitle(event.target.value);
@@ -30,6 +42,37 @@ const Search = () => {
     const onChangeDirectorName = (event) => {
         setDirectorName(event.target.value);
     }
+
+    const handleSubmitButton = () => {
+        callApiSearch()
+            .then(res => {
+            console.log("callApisearch returned: ", res);
+            setResults(res);
+            setShowTable(true);
+        })
+    }
+
+    const callApiSearch = async () => {
+        const url = serverURL + "/api/search";
+        console.log(url);
+      
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            movieTitle: movieTitle,
+            actorName: actorName,
+            directorName: directorName
+          }),
+        });
+
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        console.log(body)
+        return body;
+      }
 
     return (
         <div>
@@ -134,7 +177,9 @@ const Search = () => {
                 component="form"
                 sx={{
                 '& > :not(style)': {width: '60%'},
-                m: '2rem'
+                m: '2rem',
+                justifyContent: 'center', 
+                alignItems: 'center'
                 }}
                 noValidate
                 autoComplete="off"
@@ -150,11 +195,53 @@ const Search = () => {
             <Box sx={{ m: '2rem'}}>
                 <Button variant="contained" style={{ backgroundColor: '#0A346B'}}
                         onClick={() => {
+                            handleSubmitButton();
                         }}>
                     Submit   
                 </Button>
             </Box>
 
+            {showTable && (
+                <Box sx={{m: '2rem', display: 'flex', justifyContent: 'center' }}>
+                <TableContainer component={Paper} style={{ margin: '50px' }}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{border: '2px solid grey', fontWeight: 'bold', backgroundColor: 'darkgrey', color: 'white'}}>Category</TableCell>
+                                <TableCell sx={{border: '2px solid grey', fontWeight: 'bold', backgroundColor: 'darkgrey', color: 'white'}} align="right">Information</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {results.map((result, index) => {
+                                const reviews = (result.reviews || '').split(',');
+                                return (
+                                    <React.Fragment key={index}>
+                                        <TableRow sx={{border: '2px solid black' }}>
+                                            <TableCell component="th" scope="row">Movie Name</TableCell>
+                                            <TableCell align="right">{result.name}</TableCell>
+                                        </TableRow>
+                                        <TableRow sx={{border: '2px solid black' }}>
+                                            <TableCell component="th" scope="row">Director Name</TableCell>
+                                            <TableCell align="right">{result.first_name + ' ' + result.last_name}</TableCell>
+                                        </TableRow>
+                                        <TableRow sx={{border: '2px solid black' }}>
+                                            <TableCell component="th" scope="row">Average Review Score</TableCell>
+                                            <TableCell align="right">{result.score}</TableCell>
+                                        </TableRow>
+                                        {reviews[0] !== '' && reviews.map((review, reviewIndex) => (
+                                            <TableRow key={reviewIndex} sx={{border: '2px solid black' }}>
+                                                <TableCell component="th" scope="row">Review {reviewIndex + 1}</TableCell>
+                                                <TableCell align="right">{review}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+        )}
         </div>
     )
 }

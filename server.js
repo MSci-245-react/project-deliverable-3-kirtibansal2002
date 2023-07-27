@@ -83,48 +83,45 @@ app.post(`/api/search`, (req, res) => {
 	let actorName = req.body.actorName;
 	let directorName = req.body.directorName;
 
+	let sql = `SELECT DISTINCT M.name, D.first_name, D.last_name, GROUP_CONCAT(DISTINCT R.reviewContent) AS reviews, AVG(R.reviewScore) AS score
+	FROM movies M
+	LEFT JOIN movies_directors MD ON M.id = MD.movie_id
+	LEFT JOIN directors D ON MD.director_id = D.id
+	LEFT JOIN roles Ro ON Ro.movie_id = M.id
+	LEFT JOIN actors A ON Ro.actor_id = A.id
+	LEFT JOIN Review R ON M.id = R.id
+	WHERE 1=1`;
+
+	if (movieTitle) {
+		sql = sql + ` AND M.name LIKE '%${movieTitle}%'`;
+	}
+
+	if (actorName) {
+		sql = sql + ` AND CONCAT(A.first_name, ' ' , A.last_name) LIKE '%${actorName}%'`;
+	}
+
+	if (directorName) {
+		sql = sql + ` AND CONCAT(D.first_name, ' ' , D.last_name) LIKE '%${directorName}%'`;
+	}
+
+	sql = sql + ` GROUP BY M.name, D.first_name, D.last_name`;
+
 	console.log(movieTitle);
 	console.log(actorName);
 	console.log(directorName);
 
-	let sql = `SELECT name, first_name, last_name, reviewContent, AVG(reviewScore)
-	FROM movies M, directors D, Review R, movie_directors MD, director_genres DG
-	WHERE M.movie_id = R.id
-	AND M.movie_id = MD.movie_id
-	AND MD.director_id = DG.director_id
-	AND DG.id = D.id`;
-
-	let data = [];
-
-	if (movieTitle) {
-		sql = sql + `AND M.name LIKE '%${movieTitle}%'`;
-		data.push(movieTitle);
-	}
-
-	if (actorName) {
-		sql = sql + 
-	}
-
-	if (directorName) {
-
-	}
-
-	sql = sql + `) GROUP BY M.name, D.first_name, D.last_name, R.reviewContent`;
-
-	connection.query(insertReviewSQL, insertReviewData, (error, results, fields) => {
+	connection.query(sql, (error, results) => {
 		if (error) {
 			console.error(error.message);
 			res.status(500).send('Internal Server Error');
 			return;
-
 		}
-		res.send('Success');
+		let string = JSON.stringify(results);
+		let obj = JSON.parse(string);
+		res.send(obj);
 	});
 	connection.end();
 });
-
-
-
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server
