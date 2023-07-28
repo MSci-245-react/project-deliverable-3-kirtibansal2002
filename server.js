@@ -92,6 +92,7 @@ app.post(`/api/search`, (req, res) => {
 	LEFT JOIN Review R ON M.id = R.id
 	WHERE 1=1`;
 
+
 	if (movieTitle) {
 		sql = sql + ` AND M.name LIKE '%${movieTitle}%'`;
 	}
@@ -122,6 +123,71 @@ app.post(`/api/search`, (req, res) => {
 	});
 	connection.end();
 });
+
+app.post(`/api/MyPage`, (req, res) => {
+	let connection = mysql.createConnection(config);
+
+	let actor = req.body.actor;
+	let genre = req.body.genre;
+
+	let sql = `SELECT DISTINCT M.name, D.first_name, D.last_name, GROUP_CONCAT(CONCAT(A.first_name, ' ', A.last_name)) AS actors, AVG(R.reviewScore) AS score
+	FROM movies M
+	INNER JOIN movies_genres MG ON M.id = MG.movie_id
+	INNER JOIN movies_directors MD ON M.id = MD.movie_id
+	INNER JOIN directors D ON D.id = MD.director_id
+	INNER JOIN roles Ro ON M.id = Ro.movie_id
+	INNER JOIN actors A ON Ro.actor_id = A.id
+	LEFT JOIN Review R ON M.id = R.id
+	WHERE 1=1`;
+
+	if (genre) {
+		sql = sql + ` AND MG.genre LIKE '%${genre}%'`;
+	}
+
+	if (actor) {
+		sql = sql + ` AND actors LIKE '%${actor}%'`;
+	}
+
+	sql = sql + ` GROUP BY M.name, MG.genre, D.first_name, D.last_name`;
+
+	console.log(genre);
+	console.log(actor);
+
+	connection.query(sql, (error, results) => {
+		if (error) {
+			console.error(error.message);
+			res.status(500).send('Internal Server Error');
+			return;
+		}
+		let string = JSON.stringify(results);
+		console.log(string);
+		let obj = JSON.parse(string);
+		console.log(obj);
+
+		res.send(obj);
+	});
+	connection.end();
+});
+
+app.post(`/api/watchLater`, (req, res) => {
+	let connection = mysql.createConnection(config);
+	
+	let movieId = req.body.movieId;
+	
+	let sql = `INSERT INTO WatchLater (movieId) VALUES (?)`;
+
+	connection.query(sql, [movieId], (error, results) => {
+		if (error) {
+			console.error(error.message);
+			res.status(500).send('Internal Server Error');
+			return;
+		}
+		res.send({ success: true });
+	});
+	
+	connection.end();
+});
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server

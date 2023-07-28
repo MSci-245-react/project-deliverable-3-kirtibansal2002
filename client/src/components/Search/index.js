@@ -241,13 +241,16 @@ const Search = () => {
                                                 <TableCell align="right">{review}</TableCell>
                                             </TableRow>
                                         ))}
+                                        <TableRow>
+                                            <TableCell style={{ padding: '30px' }} colSpan={2} />
+                                        </TableRow>
                                     </React.Fragment>
                                 );
                             })}
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Box>
+                </Box>
         )}
         </div>
     )
