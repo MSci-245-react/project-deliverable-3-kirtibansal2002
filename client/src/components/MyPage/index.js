@@ -199,34 +199,23 @@ const MyPage = () => {
 
             <div>
 
-            {/* {showTable && (
-               results.map((result, index) => (
-                   <div key={index}>
-                       <h2>{result.name}</h2>
-                       <p>Directed by: {result.first_name + ' ' + result.last_name}</p>
-                       <p>Actors: {result.actors}</p>
-                       <p>Overall Rating: {result.score}</p>
-                   </div>
-               ))
-            )} */}
-
-            {/* {showTable && (
-                <Grid container spacing={3}>
+            {showTable && (
+                <Grid container spacing={3} sx={{ margin: '3rem' }}>
                     <Grid item xs={12} md={6}>
                         {results.map((result, index) => (
                             <Box key={index} sx={{mb: 2}}>
-                                <TableContainer component={Paper}>
+                                <TableContainer component={Paper} sx={{ boxShadow: '0 0 5px gray', marginBottom: '2rem' }}>
                                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>Category</TableCell>
-                                                <TableCell>Information</TableCell>
+                                                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#0A346B', color: 'white' }}>Category</TableCell>
+                                                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#0A346B', color: 'white' }}>Information</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            <TableRow>
+                                            <TableRow sx={{backgroundColor: 'rgba(63, 81, 181, 0.1)'}}>
                                                 <TableCell component="th" scope="row">Movie Name</TableCell>
-                                                <TableCell>{result.name}</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold'}}>{result.name}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell component="th" scope="row">Director Name</TableCell>
@@ -234,7 +223,11 @@ const MyPage = () => {
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell component="th" scope="row">Actors</TableCell>
-                                                <TableCell>{result.actors}</TableCell>
+                                                <TableCell>
+                                                    {result.actors.split(',').map((actor, index) => (
+                                                        <div key={index}>{actor}</div>
+                                                    ))}
+                                                </TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell component="th" scope="row">Overall Rating</TableCell>
@@ -246,63 +239,55 @@ const MyPage = () => {
                             </Box>
                         ))}
                     </Grid>
-                </Grid>
-            )} */}
 
-            {showTable && (
-                <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
-                        {results.map((result, index) => (
-                            <Box key={index} sx={{mb: 2}}>
-                                <TableContainer component={Paper}>
-                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Category</TableCell>
-                                                <TableCell>Information</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            <TableRow>
-                                                <TableCell component="th" scope="row">Movie Name</TableCell>
-                                                <TableCell>{result.name}</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell component="th" scope="row">Director Name</TableCell>
-                                                <TableCell>{result.first_name + ' ' + result.last_name}</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell component="th" scope="row">Actors</TableCell>
-                                                <TableCell>{result.actors}</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell component="th" scope="row">Overall Rating</TableCell>
-                                                <TableCell>{result.score}</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell component="th" scope="row">Watch Later</TableCell>
-                                                <TableCell>
-                                                    <Button 
-                                                        variant="contained" 
-                                                        color="primary"
-                                                        onClick={() => handleWatchLater(result.id)}
-                                                    >
-                                                        Watch Later
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Box>
-                        ))}
+                        <Box 
+                            component="form"
+                            sx={{
+                            '& > :not(style)': {width: '60%'},
+                            m: '2rem',
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'center',
+                            }}
+                            noValidate
+                            autoComplete="off"
+                        >
+                                <TextField
+                                id="outlined-basic-watchlist"
+                                label="Add Watchlist Movie"
+                                variant="outlined"
+                                // value={watchlistMovie}
+                                // onChange={onChangeWatchlistMovie}
+                                style={{ marginBottom: '1rem' }}
+                            />
+                            <Button
+                                variant="contained"
+                                style={{ backgroundColor: '#0A346B', marginBottom: '1rem' }}
+                                // onClick={() => handleAddToWatchlist()}
+                            >
+                                Add to Watchlist
+                            </Button>
+                            <TextField
+                                id="outlined-basic-watched"
+                                label="Watched Movie"
+                                variant="outlined"
+                                // value={watchedMovie}
+                                // onChange={onChangeWatchedMovie}
+                                style={{ marginBottom: '1rem' }}
+                            />
+                            <Button
+                                variant="contained"
+                                style={{ backgroundColor: '#0A346B' }}
+                                // onClick={() => handleMarkAsWatched()}
+                            >
+                                Mark as Watched
+                            </Button>
+                        </Box>
                     </Grid>
                 </Grid>
             )}
-
-
            </div>
-
         </div>
     )
 

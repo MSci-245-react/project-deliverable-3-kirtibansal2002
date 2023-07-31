@@ -145,7 +145,7 @@ app.post(`/api/MyPage`, (req, res) => {
 	}
 
 	if (actor) {
-		sql = sql + ` AND actors LIKE '%${actor}%'`;
+		sql = sql + ` AND CONCAT(A.first_name, ' ' , A.last_name) LIKE '%${actor}%'`;
 	}
 
 	sql = sql + ` GROUP BY M.name, MG.genre, D.first_name, D.last_name`;

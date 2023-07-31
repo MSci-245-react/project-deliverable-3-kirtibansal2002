@@ -209,49 +209,50 @@ const Search = () => {
             </Box>
 
             {showTable && (
-                <Box sx={{m: '2rem', display: 'flex', justifyContent: 'center' }}>
-                <TableContainer component={Paper} style={{ margin: '50px' }}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{border: '2px solid grey', fontWeight: 'bold', backgroundColor: 'darkgrey', color: 'white'}}>Category</TableCell>
-                                <TableCell sx={{border: '2px solid grey', fontWeight: 'bold', backgroundColor: 'darkgrey', color: 'white'}} align="right">Information</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {results.map((result, index) => {
-                                const reviews = (result.reviews || '').split(',');
-                                return (
-                                    <React.Fragment key={index}>
-                                        <TableRow sx={{border: '2px solid black' }}>
-                                            <TableCell component="th" scope="row">Movie Name</TableCell>
-                                            <TableCell align="right">{result.name}</TableCell>
-                                        </TableRow>
-                                        <TableRow sx={{border: '2px solid black' }}>
-                                            <TableCell component="th" scope="row">Director Name</TableCell>
-                                            <TableCell align="right">{result.first_name + ' ' + result.last_name}</TableCell>
-                                        </TableRow>
-                                        <TableRow sx={{border: '2px solid black' }}>
-                                            <TableCell component="th" scope="row">Average Review Score</TableCell>
-                                            <TableCell align="right">{result.score}</TableCell>
-                                        </TableRow>
-                                        {reviews[0] !== '' && reviews.map((review, reviewIndex) => (
-                                            <TableRow key={reviewIndex} sx={{border: '2px solid black' }}>
-                                                <TableCell component="th" scope="row">Review {reviewIndex + 1}</TableCell>
-                                                <TableCell align="right">{review}</TableCell>
+                <Box sx={{m: '2rem', display: 'flex', justifyContent: 'center'}}>
+                    <TableContainer component={Paper} sx={{maxWidth: '80%', marginBottom: '50px', boxShadow: '2px 2px 10px gray'}}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{border: '1px solid grey', fontWeight: 'bold', backgroundColor: '#0A346B', color: 'white'}}>Category</TableCell>
+                                    <TableCell sx={{border: '1px solid grey', fontWeight: 'bold', backgroundColor: '#0A346B', color: 'white'}} align="right">Information</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {results.map((result, index) => {
+                                    const reviews = (result.reviews || '').split(',');
+                                    return (
+                                        <React.Fragment key={index}>
+                                            <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }, border: '1px solid lightgray' }}>
+                                                <TableCell component="th" scope="row">Movie Name</TableCell>
+                                                <TableCell align="right">{result.name}</TableCell>
                                             </TableRow>
-                                        ))}
-                                        <TableRow>
-                                            <TableCell style={{ padding: '30px' }} colSpan={2} />
-                                        </TableRow>
-                                    </React.Fragment>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                                            <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }, border: '1px solid lightgray' }}>
+                                                <TableCell component="th" scope="row">Director Name</TableCell>
+                                                <TableCell align="right">{result.first_name + ' ' + result.last_name}</TableCell>
+                                            </TableRow>
+                                            <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }, border: '1px solid lightgray' }}>
+                                                <TableCell component="th" scope="row">Average Review Score</TableCell>
+                                                <TableCell align="right">{result.score}</TableCell>
+                                            </TableRow>
+                                            {reviews[0] !== '' && reviews.map((review, reviewIndex) => (
+                                                <TableRow key={reviewIndex} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }, border: '1px solid lightgray' }}>
+                                                    <TableCell component="th" scope="row">Review {reviewIndex + 1}</TableCell>
+                                                    <TableCell align="right">{review}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                            <TableRow>
+                                                <TableCell style={{ padding: '30px' }} colSpan={2} />
+                                            </TableRow>
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Box>
-        )}
+            )}
+
         </div>
     )
 }
