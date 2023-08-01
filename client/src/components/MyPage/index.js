@@ -338,13 +338,13 @@ const MyPage = () => {
                                             <TableRow>
                                                 <TableCell component="th" scope="row">Trailer</TableCell>
                                                 <TableCell>
-                                                    <iframe
-                                                        width="560"
-                                                        height="315"
-                                                        src={convertToEmbedURL(result.youtube_url)}
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                        allowFullScreen
-                                                    />
+                                                    <div>
+                                                        <iframe
+                                                            src={convertToEmbedURL(result.youtube_url)}
+                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                            allowFullScreen
+                                                        />
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         </TableBody>
