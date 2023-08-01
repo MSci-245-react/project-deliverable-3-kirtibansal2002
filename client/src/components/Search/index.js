@@ -223,9 +223,9 @@ const Search = () => {
                                     const reviews = (result.reviews || '').split(',');
                                     return (
                                         <React.Fragment key={index}>
-                                            <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }, border: '1px solid lightgray' }}>
+                                            <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: 'rgba(63, 81, 181, 0.1)' }, border: '1px solid lightgray' }}>
                                                 <TableCell component="th" scope="row">Movie Name</TableCell>
-                                                <TableCell align="right">{result.name}</TableCell>
+                                                <TableCell align="right" sx={{fontWeight: 'bold'}}>{result.name}</TableCell>
                                             </TableRow>
                                             <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }, border: '1px solid lightgray' }}>
                                                 <TableCell component="th" scope="row">Director Name</TableCell>

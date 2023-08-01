@@ -7,10 +7,9 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import {Grid, Item} from '@mui/material';
+import {Grid} from '@mui/material';
 import {TextField} from '@mui/material';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -28,6 +27,10 @@ const MyPage = () => {
     const [actor, setActor] = useState('');
     const [results , setResults] = useState([]);
     const [showTable, setShowTable] = useState(false);
+    const [watchlistMovie, setWatchListMovie] = useState('');
+    const [watchedMovie, setWatchedMovie] = useState('');
+    const [showWatchlist, setShowWatchlist] = useState(false);
+    const [watchlist, setWatchList] = useState([]);
 
     const onChangeGenre = (event) => {
         setGenre(event.target.value);
@@ -35,6 +38,14 @@ const MyPage = () => {
 
     const onChangeActor = (event) => {
         setActor(event.target.value);
+    }
+
+    const onChangeWatchlistMovie = (event) => {
+        setWatchListMovie(event.target.value);
+    }
+
+    const onChangeWatchedMovie = (event) => {
+        setWatchedMovie(event.target.value);
     }
 
     const handleSubmit = () => {
@@ -46,9 +57,72 @@ const MyPage = () => {
         })
     }
 
+    const handleWatchLaterButton = () => {
+        console.log('watchlistMovie: ', watchlistMovie); 
+        const watchLaterMovieId = findMovieId(watchlistMovie);
+        console.log(watchLaterMovieId);
+        console.log("movie Id");
+        if (watchLaterMovieId) {
+            handleWatchLater(watchLaterMovieId)
+                .then (() => {
+                    callWatchLaterList()
+                        .then(res => {
+                            console.log("callApiWatchLaterList returned: ", res);
+                            setWatchList(res);
+                            setShowWatchlist(true);
+                        });
+                    });
+        } else {
+            console.log("movie not found");
+        }
+    }
+
+    const handleWatchedMovieButton = () => {
+        const watchedMovieId = findMovieId(watchedMovie);
+        if (watchedMovieId) {
+            handleWatched(watchedMovieId)
+                .then(() => {
+                     callWatchLaterList()
+                        .then(res => {
+                            console.log("callApiMyPage returned: ", res);
+                            setWatchList(res);
+                            setShowWatchlist(true);
+                        });
+                });
+        } else {
+            console.log("watched movie not found");
+        }
+
+        console.log(watchlist);
+        
+    }
+
+    const findMovieId = (movieNames) => {
+        console.log(results);
+        console.log(movieNames);
+        const moviesID = results.find(result => result.name === movieNames);
+        return moviesID ? moviesID.id: null;
+    }
+    
     const handleWatchLater = async (movieID) => {
-        const response = await fetch('your-server-url/api/watchLater', {
+        const response = await fetch(serverURL + '/api/watchLater', {
             method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              movieID: movieID
+            }),
+          });
+          const body = await response;
+          if (response.status !== 200) throw Error(body.message);
+          console.log(body);
+          return body.json();
+    }
+
+    const handleWatched = async (movieID) => {
+        const response = await fetch(serverURL + '/api/watchedMovie', {
+            method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
             },
@@ -59,9 +133,21 @@ const MyPage = () => {
           
           const body = await response;
           if (response.status !== 200) throw Error(body.message);
-        
           console.log(body);
           return body;
+    }
+
+    const callWatchLaterList = async () => {
+        const response = await fetch(serverURL + `/api/watchList`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+        });
+    
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
     }
 
     const callApiMyPage = async () => {
@@ -84,6 +170,15 @@ const MyPage = () => {
         
         console.log(body);
         return body;
+      }
+
+      const convertToEmbedURL = (url) => {
+        if (!url) {
+          return 'https://www.youtube.com/embed/default';
+        }
+    
+        const videoId = new URLSearchParams(new URL(url).search).get('v');
+        return `https://www.youtube.com/embed/${videoId}`;
       }
  
     return (
@@ -197,6 +292,13 @@ const MyPage = () => {
                 </Grid>
             </Box>
 
+            <Box ml={45}>
+                <Typography variant="body2" color="text.secondary">
+                    Please only search up "Horror" in the Genre textfield to view working embedded movie trailer links 
+                </Typography>
+            </Box>
+            
+
             <div>
 
             {showTable && (
@@ -219,19 +321,31 @@ const MyPage = () => {
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell component="th" scope="row">Director Name</TableCell>
-                                                <TableCell>{result.first_name + ' ' + result.last_name}</TableCell>
+                                                <TableCell>
+                                                    {result.directors}
+                                                </TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell component="th" scope="row">Actors</TableCell>
                                                 <TableCell>
-                                                    {result.actors.split(',').map((actor, index) => (
-                                                        <div key={index}>{actor}</div>
-                                                    ))}
+                                                    {result.actors.replace(/,/g, ', ')}
                                                 </TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell component="th" scope="row">Overall Rating</TableCell>
                                                 <TableCell>{result.score}</TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell component="th" scope="row">Trailer</TableCell>
+                                                <TableCell>
+                                                    <iframe
+                                                        width="560"
+                                                        height="315"
+                                                        src={convertToEmbedURL(result.youtube_url)}
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                    />
+                                                </TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>
@@ -257,14 +371,14 @@ const MyPage = () => {
                                 id="outlined-basic-watchlist"
                                 label="Add Watchlist Movie"
                                 variant="outlined"
-                                // value={watchlistMovie}
-                                // onChange={onChangeWatchlistMovie}
+                                value={watchlistMovie}
+                                onChange={onChangeWatchlistMovie}
                                 style={{ marginBottom: '1rem' }}
                             />
                             <Button
                                 variant="contained"
                                 style={{ backgroundColor: '#0A346B', marginBottom: '1rem' }}
-                                // onClick={() => handleAddToWatchlist()}
+                                onClick={() => handleWatchLaterButton()}
                             >
                                 Add to Watchlist
                             </Button>
@@ -272,30 +386,64 @@ const MyPage = () => {
                                 id="outlined-basic-watched"
                                 label="Watched Movie"
                                 variant="outlined"
-                                // value={watchedMovie}
-                                // onChange={onChangeWatchedMovie}
+                                value={watchedMovie}
+                                onChange={onChangeWatchedMovie}
                                 style={{ marginBottom: '1rem' }}
                             />
                             <Button
                                 variant="contained"
                                 style={{ backgroundColor: '#0A346B' }}
-                                // onClick={() => handleMarkAsWatched()}
+                                onClick={() => handleWatchedMovieButton()}
                             >
                                 Mark as Watched
                             </Button>
+
+                            {showWatchlist && (
+                            <Box sx={{ marginTop: '2rem', marginBottom: '2rem' }}>
+                                <Typography variant="h6" component="div" align="center" sx={{ marginBottom: '1rem' }}>
+                                Your Watch List
+                                </Typography>
+                                <TableContainer component={Paper} sx={{ boxShadow: '0 0 5px gray', overflowX: 'hidden', padding: '1rem' }}>
+                                {Array.isArray(watchlist) && watchlist.length > 0 ? (
+                                    watchlist.map((movie, index) => (
+                                    <Box
+                                        key={index}
+                                        sx={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        borderBottom: '1px solid gray',
+                                        padding: '1rem',
+                                        }}
+                                    >
+                                        {movie.name}
+                                    </Box>
+                                    ))
+                                ) : (
+                                    <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        borderBottom: '1px solid gray',
+                                        padding: '1rem',
+                                    }}
+                                    >
+                                    No movies in watchlist
+                                    </Box>
+                                )}
+                                </TableContainer>
+                            </Box>
+                            )}
+
                         </Box>
                     </Grid>
                 </Grid>
+
             )}
            </div>
         </div>
     )
-
-    //search movies by genre and actors?
-    // they can look at the overall review
-    // watch the movie trailer 
-    // and save the movie as their watch later 
-    // if they have watched it then remove it from the list 
 }
 export default MyPage;
 

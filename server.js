@@ -130,7 +130,7 @@ app.post(`/api/MyPage`, (req, res) => {
 	let actor = req.body.actor;
 	let genre = req.body.genre;
 
-	let sql = `SELECT DISTINCT M.name, D.first_name, D.last_name, GROUP_CONCAT(CONCAT(A.first_name, ' ', A.last_name)) AS actors, AVG(R.reviewScore) AS score
+	let sql = `SELECT DISTINCT M.name AS name, M.id AS id, M.youtube_url, GROUP_CONCAT(DISTINCT CONCAT(D.first_name, ' ', D.last_name)) AS directors, GROUP_CONCAT(DISTINCT CONCAT(A.first_name, ' ', A.last_name)) AS actors, AVG(R.reviewScore) AS score
 	FROM movies M
 	INNER JOIN movies_genres MG ON M.id = MG.movie_id
 	INNER JOIN movies_directors MD ON M.id = MD.movie_id
@@ -148,7 +148,7 @@ app.post(`/api/MyPage`, (req, res) => {
 		sql = sql + ` AND CONCAT(A.first_name, ' ' , A.last_name) LIKE '%${actor}%'`;
 	}
 
-	sql = sql + ` GROUP BY M.name, MG.genre, D.first_name, D.last_name`;
+	sql = sql + ` GROUP BY M.name, M.id, M.youtube_url, MG.genre`;
 
 	console.log(genre);
 	console.log(actor);
@@ -162,21 +162,40 @@ app.post(`/api/MyPage`, (req, res) => {
 		let string = JSON.stringify(results);
 		console.log(string);
 		let obj = JSON.parse(string);
-		console.log(obj);
 
 		res.send(obj);
 	});
 	connection.end();
 });
 
+
 app.post(`/api/watchLater`, (req, res) => {
 	let connection = mysql.createConnection(config);
 	
-	let movieId = req.body.movieId;
+	let movieID = req.body.movieID;
 	
-	let sql = `INSERT INTO WatchLater (movieId) VALUES (?)`;
+	let sql = `INSERT INTO WatchLater (movie_id) VALUES (?)`;
 
-	connection.query(sql, [movieId], (error, results) => {
+	connection.query(sql, [movieID], (error, results) => {
+		if (error) {
+			console.error(error.message);
+			res.status(500).send('Internal Server Error');
+			return;
+		}
+		res.send({ success: true });
+	});
+
+	connection.end();
+});
+
+app.delete(`/api/watchedMovie`, (req, res) => {
+	let connection = mysql.createConnection(config);
+	
+	let movieID = req.body.movieID;
+	
+	let sql = `DELETE FROM WatchLater WHERE movie_id = ?`;
+
+	connection.query(sql, [movieID], (error, results) => {
 		if (error) {
 			console.error(error.message);
 			res.status(500).send('Internal Server Error');
@@ -188,6 +207,29 @@ app.post(`/api/watchLater`, (req, res) => {
 	connection.end();
 });
 
+app.post(`/api/watchList`, (req, res) => {
+	let connection = mysql.createConnection(config);
+	
+	let sql = `SELECT DISTINCT M.name 
+			   FROM movies M, WatchLater WL
+			   WHERE WL.movie_id = M.id`;
+
+		connection.query(sql, (error, results) => {
+			if (error) {
+				console.error(error.message);
+				res.status(500).send('Internal Server Error');
+				return;
+			}
+			let string = JSON.stringify(results);
+			console.log(string);
+			let obj = JSON.parse(string);
+		
+			res.send(obj);
+
+			console.log(obj);
+		});
+		connection.end();
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
 //app.listen(port, '172.31.31.77'); //for the deployed version, specify the IP address of the server
